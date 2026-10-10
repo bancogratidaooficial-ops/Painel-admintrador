@@ -1,0 +1,9 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width">
+<title>ADMIN</title><style>body{background:#000;color:#fff;font-family:Arial;padding:20px;text-align:center}
+.card{background:#111;border:2px solid #ffcc00;border-radius:15px;padding:20px;max-width:400px;margin:auto}
+input{width:90%;padding:12px;border-radius:8px;border:2px solid #ffcc00;text-align:center;font-weight:bold}
+button{background:#ffcc00;color:#000;border:none;padding:14px;width:100%;margin:5px 0;border-radius:10px;font-weight:bold}
+.codigo{font-size:28px;color:#ffcc00;margin:15px 0}</style></head><body><div class="card">
+<h2 style="color:#ffcc00">GERADOR DE CÓDIGOS</h2><input id="nome" placeholder="Nome do cliente">
+<button onclick="let c='';let ch='ABCD1234';for(let i=0;i<4;i++)c+=ch[Math.floor(Math.random()*36)];let f='GRATI-'+c;document.getElementById('res').innerText=f;localStorage.setItem('cod',f)">GERAR GRATI-XXXX</button>
+<div id="res" class="codigo"></div><button onclick="navigator.clipboard.writeText(document.getElementById('res').innerText)">COPIAR</button></div></body></html>
