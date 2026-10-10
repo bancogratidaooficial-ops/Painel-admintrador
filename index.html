@@ -1,9 +1,61 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width">
-<title>ADMIN</title><style>body{background:#000;color:#fff;font-family:Arial;padding:20px;text-align:center}
-.card{background:#111;border:2px solid #ffcc00;border-radius:15px;padding:20px;max-width:400px;margin:auto}
-input{width:90%;padding:12px;border-radius:8px;border:2px solid #ffcc00;text-align:center;font-weight:bold}
-button{background:#ffcc00;color:#000;border:none;padding:14px;width:100%;margin:5px 0;border-radius:10px;font-weight:bold}
-.codigo{font-size:28px;color:#ffcc00;margin:15px 0}</style></head><body><div class="card">
-<h2 style="color:#ffcc00">GERADOR DE CÓDIGOS</h2><input id="nome" placeholder="Nome do cliente">
-<button onclick="let c='';let ch='ABCD1234';for(let i=0;i<4;i++)c+=ch[Math.floor(Math.random()*36)];let f='GRATI-'+c;document.getElementById('res').innerText=f;localStorage.setItem('cod',f)">GERAR GRATI-XXXX</button>
-<div id="res" class="codigo"></div><button onclick="navigator.clipboard.writeText(document.getElementById('res').innerText)">COPIAR</button></div></body></html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADMIN - Banco Gratidão</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ffcc00">
+<style>
+body{background:#000;color:#fff;font-family:Arial;padding:15px;text-align:center}
+.card{background:#111;border:2px solid #ffcc00;border-radius:18px;padding:20px;max-width:420px;margin:auto;box-shadow:0 0 20px #ffcc0055}
+input,select{width:92%;padding:13px;border-radius:10px;border:2px solid #ffcc00;text-align:center;font-weight:bold;margin:8px 0;background:#000;color:#fff}
+button{background:#ffcc00;color:#000;border:none;padding:14px;width:100%;margin:6px 0;border-radius:12px;font-weight:900;font-size:16px}
+.codigo{font-size:32px;color:#ffcc00;letter-spacing:4px;margin:18px 0;font-weight:900}
+.item{border-bottom:1px solid #333;padding:8px 0;text-align:left;font-size:13px}
+</style>
+</head>
+<body>
+<div class="card">
+<h2 style="color:#ffcc00;margin:0">🔑 PAINEL ADMIN<br>BANCO GRATIDÃO</h2>
+<p style="font-size:12px;opacity:.7">PIX: 025.446.319-37</p>
+<input id="nome" placeholder="Nome do cliente que pagou">
+<select id="plano"><option value="30">30 DIAS - R$ 9,90 / 28,00</option><option value="7">7 DIAS - R$ 2,99</option><option value="365">1 ANO - R$ 97,00</option></select>
+<button onclick="gerar()">GERAR CÓDIGO GRATI-XXXX</button>
+<div id="res" class="codigo">----</div>
+<button onclick="copiar()" style="background:#fff">📋 COPIAR CÓDIGO</button>
+<button id="zap" onclick="enviarZap()" style="background:#25D366;color:#fff;display:none">ENVIAR NO ZAP</button>
+<div id="hist" style="margin-top:15px"></div>
+</div>
+<script>
+function gerar(){
+ let chars='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+ let c=''; for(let i=0;i<4;i++) c+=chars[Math.floor(Math.random()*chars.length)];
+ let final='GRATI-'+c;
+ document.getElementById('res').innerText=final;
+ document.getElementById('zap').style.display='block';
+ let nome=document.getElementById('nome').value||'Cliente';
+ let plano=document.getElementById('plano').value;
+ let hist=JSON.parse(localStorage.getItem('grati_hist')||'[]');
+ hist.unshift({nome,codigo:final,plano,dia:new Date().toLocaleString('pt-BR')});
+ localStorage.setItem('grati_hist',JSON.stringify(hist));
+ render();
+}
+function copiar(){ navigator.clipboard.writeText(document.getElementById('res').innerText); alert('Copiado!'); }
+function enviarZap(){
+ let cod=document.getElementById('res').innerText;
+ let nome=document.getElementById('nome').value||'';
+ let msg=`Olá ${nome}! ✅ Pagamento confirmado!%0A%0ASeu código do app CONTROLE DE DÍVIDAS:%0A*${cod}*%0A%0AVálido por 30 dias. Qualquer dúvida me chama!`;
+ window.open(`https://wa.me/?text=${msg}`,'_blank');
+}
+function render(){
+ let h=JSON.parse(localStorage.getItem('grati_hist')||'[]');
+ let html='<h4 style=color:#ffcc00>Últimos códigos:</h4>';
+ h.slice(0,30).forEach(o=>{ html+=`<div class=item>${o.dia} - ${o.nome}: <b style=color:#ffcc00>${o.codigo}</b> (${o.plano}d)</div>` });
+ document.getElementById('hist').innerHTML=html;
+}
+render();
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js'); }
+</script>
+</body>
+</html>
